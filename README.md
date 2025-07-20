@@ -51,3 +51,56 @@ This is a solo prototype for now, but contributions, questions, and speculative 
 ResoNet is inspired by the idea that form and meaning can emerge — not from code or cognition — but from **structure**, **feedback**, and **resonance** itself.
 
 ---
+
+## 🛠️ Setup Instructions
+
+These instructions assume a Raspberry Pi 4 or 5 running Raspberry Pi OS (Bookworm) or Debian 12, with `git`, Python 3.11+, and `pip` installed.
+
+### 1. Clone the repository
+
+```bash
+git clone git@github.com:FutureSteve/resonet.git
+cd resonet
+```
+
+### 2. Create and activate a Python virtual environment
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install required Python packages
+
+```bash
+pip install -r requirements.txt
+```
+
+If you encounter issues with `sounddevice`, ensure `portaudio` is installed:
+
+```bash
+sudo apt install libportaudio2
+```
+
+### 4. Test tone playback
+
+Connect your speaker or vibration transducer via amplifier, then run:
+
+```bash
+python test_tone.py
+```
+
+You should hear a brief tone. Adjust volume as needed on the amplifier.
+
+### 5. Visualize waveform and frequency
+
+To plot both the time-domain waveform and frequency spectrum:
+
+```bash
+python harmonic_plot.py
+```
+
+You can adjust the tone composition by modifying `harmonic_plot.py`.
+
+---
+
