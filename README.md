@@ -40,6 +40,28 @@ This is the first exploratory phase:
 - [ ] Hardware integration with Raspberry Pi and ADS1115
 - [ ] Closed-loop resonance modification system
 
+## 🧭 Architecture Update: Multi-Layer Physical Neural System
+
+ResoNet now includes an experimental **two-layer resonant substrate**, where piezo disks serve as **resonators (outputs)** and **receivers (inputs)** in a physical neural network.
+
+### Layer Design
+- **Layer 1**: 4 driven piezo resonators on the left side of the shared aluminum substrate
+- **Layer 2**: 2 driven piezo resonators on the right side
+- Each layer has 4 receiving piezo disks mounted on the opposite side, connected to an ADS1115 ADC for sensing
+
+### Signal Generation
+- A dedicated **ESP32** generates 6 independent PWM signals (4 for Layer 1, 2 for Layer 2)
+- PWM signals pass through RC filters into **PAM8403 dual-channel audio amplifiers**
+- Output from the amplifiers drives the piezo disks
+
+### Feedback Loop
+- The **Raspberry Pi** reads vibration signals from the ADS1115
+- Based on the output and a training target, the Pi computes error and weight adjustments using a form of **gradient descent**
+- The Pi sends new drive amplitudes to the ESP32 over UART, updating PWM duty cycles
+
+Schematic and PCB files for the sensor array are in the `pcb/` directory.
+
+
 ## 🤝 Contribution
 
 This is a solo prototype for now, but contributions, questions, and speculative discussions are welcome. Feel free to open issues or suggest papers, metaphors, or mechanisms.
