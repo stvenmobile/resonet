@@ -61,7 +61,13 @@ ResoNet now includes an experimental **two-layer resonant substrate**, where pie
 
 Schematic and PCB files for the sensor PCB are in the `pcb/` directory.
 
-🧪 Experimental Phase 1: Spectral Exploration
+
+### 🔬 Phase 1 Experimental Questions
+
+- How do pure tones manifest across the plate?
+- Does cross-talk occur between layers?
+- How does interference affect resonance quality?
+- Can spectrograms detect persistent or self-reinforcing tones?
 
 The first phase of experimentation centers around observing and visualizing tonal patterns over time using live spectrograms.
 🎯 Objective
