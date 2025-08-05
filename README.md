@@ -61,6 +61,116 @@ ResoNet now includes an experimental **two-layer resonant substrate**, where pie
 
 Schematic and PCB files for the sensor array are in the `pcb/` directory.
 
+🧪 Experimental Phase 1: Spectral Exploration
+
+The first phase of experimentation centers around observing and visualizing tonal patterns over time using live spectrograms.
+🎯 Objective
+
+To develop a deeper understanding of how vibrations propagate across the physical substrate, with a focus on:
+
+    How individual tones appear in time-frequency space
+
+    Whether resonance persists beyond a tone's duration
+
+    How simultaneous or overlapping signals affect neighboring nodes
+
+    Whether interference between layers leads to destructive noise or constructive resonance
+
+This is not yet a training phase — it is a calibration and sensory tuning phase. The goal is to define and observe the characteristics of vibration, including:
+
+    Amplitude: Intensity of the signal over time
+
+    Frequency: Dominant and harmonic tones
+
+    Envelope: The attack, sustain, and decay profile
+
+    Resonance: Sustained feedback or self-reinforcement
+
+👁️ Visualization Tool
+
+A real-time spectrogram visualization system has been implemented. It captures piezo sensor data (via ADS1115) and displays a rolling time-frequency plot of vibration:
+
+    Layer 1 is plotted in its own window
+
+    Layer 2 (if active) will appear in a second subplot
+
+    Tones played through connected actuators appear as stripes or blobs in the frequency domain
+
+🧬 Experimental Design
+
+Each test run spans 10 seconds, during which a predefined sequence of tones (e.g., A–B–C) is played through one layer. Variants of each experiment will modify tone timing or introduce interfering tones from the other layer:
+Trial	Layer 1 Sequence	Layer 2 Tone
+1	A – B – C	None
+2	A – B – C	Tone during B
+3	A – B – C	Tone during C
+...	...	...
+
+By comparing the spectrograms, we can analyze:
+
+    How clearly each note registers
+
+    Whether simultaneous tones blur or amplify
+
+    Whether one layer becomes background noise or actively distorts the other
+
+🔍 Broader Goal
+
+These tests help identify useful signal characteristics that may later serve as inputs to a learning network or be used to define resonant attractor states. They also help define what "interference" and "clarity" mean in this physical system.
+
+This process is intentionally open-ended — we are mapping the sonic and harmonic landscape to see what kinds of cognitive primitives may emerge.
+
+
+ Optional Enhancement: Dual Mono Output Mode
+
+For experiments where signal clarity, symmetry, and energy uniformity are critical, the system can be configured to operate in dual mono mode using the HiFiBerry DAC2 Pro.
+
+In this mode, both the left and right audio channels output the same mono signal, effectively doubling the signal path and reducing distortion or channel imbalance.
+✅ Benefits for Resonance Experiments
+
+    Increased signal power: Both DAC channels reinforce the same waveform, providing greater amplitude for driving actuators.
+
+    Improved symmetry: Eliminates phase drift or imbalance between stereo channels.
+
+    Cleaner resonance analysis: Ideal when driving symmetrical actuator setups or when visualizing frequency harmonics in the spectrogram.
+
+    Predictable input state: Simplifies A/B experiments by reducing the number of signal variables.
+
+🛠️ How to Enable Dual Mono Mode
+
+    Open the ALSA configuration:
+
+sudo nano /etc/asound.conf
+
+Add or replace with the following:
+
+pcm.!default {
+    type hw card 0
+}
+ctl.!default {
+    type hw card 0
+}
+
+Enable dual mono mode via amixer:
+
+amixer -c 0 sset 'Dual Mono' on
+
+Test with a tone:
+
+    speaker-test -c 2 -t sine -f 1000
+
+You should now hear the same tone on both output channels simultaneously, confirming dual mono is active.
+🧪 Experimental Use
+
+You can now route each mono output from the DAC2 Pro or Amp2 to separate actuators (e.g., two on layer 1), confident that both channels are outputting identical and reinforced signals. This is especially useful for:
+
+    Testing physical symmetry in the aluminum plate
+
+    Determining resonance thresholds with maximum tone energy
+
+    Creating baseline measurements before introducing interference from layer 2
+	
+	
+	
 
 ## 🤝 Contribution
 
@@ -125,4 +235,5 @@ python harmonic_plot.py
 You can adjust the tone composition by modifying `harmonic_plot.py`.
 
 ---
+
 
