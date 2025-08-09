@@ -51,8 +51,53 @@ ResoNet now includes an experimental **two-layer resonant substrate**, where pie
 
 ### Signal Generation
 - A dedicated **ESP32** generates 2 independent PWM signals for the resonators
-- PWM signals pass through RC filters into the hifiberry amplifier
+- PWM signals pass through RC filters into the LOSC Audio Amplifier
 - Output from the amplifier drives the piezo resonators
+
+
+### ⚡ ESP32 Signal Generator (signal_gen.ino)
+
+This firmware runs on the ESP32 to generate two independent PWM signals for driving the left and right resonators in the ResoNet substrate. It provides both a web interface and a simple HTTP API for remote control.
+Features
+
+    Independent control of Left and Right channels
+
+    Adjustable frequency and duty cycle per channel
+
+    Start/Stop control per channel without losing settings
+
+    12-bit PWM resolution (0–4095 duty internally) for extended low-frequency range
+
+    HTTP API for scripting and automation
+
+#### Parameters
+
+| Parameter        | Range (UI)    | Range (internal) | Notes |
+|------------------|---------------|------------------|-------|
+| `freqL`, `freqR` | 1 – 40000 Hz  | 1 – 40000 Hz     | Practical usable range depends on resolution, amplifier, and load. At 12-bit, can drive well below 300 Hz; efficiency may drop for small exciters below ~200 Hz. |
+| `dutyL`, `dutyR` | 0 – 255       | 0 – 4095         | UI values are scaled internally to 12-bit. A value of `0` stops output; near-max values can cause distortion or clipping depending on amplifier/load. |
+| `leftOn`, `rightOn` | 0 or 1     | —                | Enable/disable channel output without losing frequency/duty settings. |
+
+
+HTTP API
+
+    GET /status → JSON snapshot of current settings
+
+    GET /startL, GET /stopL → Start/Stop left channel
+
+    GET /startR, GET /stopR → Start/Stop right channel
+
+    GET /set?... → Set any combination of freqL, freqR, dutyL, dutyR, leftOn, rightOn (e.g. /set?freqL=440&dutyL=128&leftOn=1)
+
+Practical Notes
+
+    Lower frequency limit: Software supports 1 Hz, but most small resonators/amplifiers have poor response below ~100–200 Hz.
+
+    Upper frequency limit: PWM supports up to ~40 kHz in this config, though acoustic output >20 kHz is inaudible.
+
+    Duty cycle: For testing, start with 100–150 (≈ 40–60% duty) in UI. Extreme values can stress hardware.
+
+    Resolution trade-off: 12-bit resolution allows low-frequency operation but slightly reduces max achievable frequency compared to 8-bit.
 
 ### Feedback Loop
 - The **Raspberry Pi** reads vibration signals from the ADS1115
@@ -60,6 +105,9 @@ ResoNet now includes an experimental **two-layer resonant substrate**, where pie
 - The Pi sends new drive amplitudes to the ESP32 over UART, updating PWM duty cycles
 
 Schematic and PCB files for the sensor PCB are in the `pcb/` directory.
+
+
+
 
 
 ### 🔬 Phase 1 Experimental Questions

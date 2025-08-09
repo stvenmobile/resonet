@@ -1,0 +1,4 @@
+- [ ] Plot dual-layer spectrograms in real time
+- [ ] Define JSON command protocol for ESP32 tone control
+- [ ] Create synthetic tone playback sequences from MIDI or CSV
+- [ ] Detect harmonics above base frequency in FFT
