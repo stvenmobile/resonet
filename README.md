@@ -79,15 +79,17 @@ Features
 | `leftOn`, `rightOn` | 0 or 1     | —                | Enable/disable channel output without losing frequency/duty settings. |
 
 
-HTTP API
+#### HTTP API
 
-    GET /status → JSON snapshot of current settings
+| Endpoint | Method | Parameters | Description |
+|----------|--------|------------|-------------|
+| `/status` | GET | — | Returns a JSON snapshot of current settings and state for both channels. |
+| `/startL` | GET | — | Enables output on the left channel (uses last set frequency/duty). |
+| `/stopL`  | GET | — | Disables output on the left channel (duty forced to 0). |
+| `/startR` | GET | — | Enables output on the right channel (uses last set frequency/duty). |
+| `/stopR`  | GET | — | Disables output on the right channel (duty forced to 0). |
+| `/set`    | GET | Any subset of: `freqL`, `freqR`, `dutyL`, `dutyR`, `leftOn`, `rightOn` | Updates parameters for one or both channels. Example: `/set?freqL=440&dutyL=128&leftOn=1`. |
 
-    GET /startL, GET /stopL → Start/Stop left channel
-
-    GET /startR, GET /stopR → Start/Stop right channel
-
-    GET /set?... → Set any combination of freqL, freqR, dutyL, dutyR, leftOn, rightOn (e.g. /set?freqL=440&dutyL=128&leftOn=1)
 
 Practical Notes
 
