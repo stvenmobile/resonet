@@ -45,11 +45,10 @@ static inline uint32_t scaleDuty(uint32_t d8){
 }
 
 static String jsonStatus() {
-  // Report both UI duty (0..255) and effective duty (0..4095)
   uint32_t effL = leftEnabled  ? scaleDuty(clampU32(dutyL8, 0, 255)) : 0;
   uint32_t effR = rightEnabled ? scaleDuty(clampU32(dutyR8, 0, 255)) : 0;
-
   String ip = (WiFi.status() == WL_CONNECTED) ? WiFi.localIP().toString() : "0.0.0.0";
+
   String s = "{";
   s += "\"ip\":\"" + ip + "\",";
   s += "\"freqL\":" + String(freqL) + ",";
@@ -73,8 +72,13 @@ static void sendJSON(AsyncWebServerRequest* req, const String& body, int status=
 
 // ---------- UI ----------
 String page() {
+  // Note: using &bull; for bullets and declaring UTF-8 in <head>.
   String html = R"HTML(
-  <!doctype html><html><head><meta name=viewport content="width=device-width, initial-scale=1">
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name=viewport content="width=device-width, initial-scale=1">
   <title>ResoNet Control</title>
   <style>
     :root{--fg:#111;--mut:#666}
@@ -91,58 +95,60 @@ String page() {
     .status{font-size:.9rem;color:var(--mut)}
     code{background:#f2f2f2;padding:.1rem .3rem;border-radius:4px}
     .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
-  </style></head><body>
+  </style>
+</head>
+<body>
   <h3>ESP32 PWM Control (STA mode)</h3>
 
-  <div class=grid>
-    <div class=card>
+  <div class="grid">
+    <div class="card">
       <h4>Left Channel</h4>
       <form action="/set" method="get">
-        <div class=row>
+        <div class="row">
           <label>Frequency (Hz)</label>
-          <input name=freqL type=number min=1 max=40000 required>
+          <input name="freqL" type="number" min="1" max="40000" required>
         </div>
-        <div class=row>
+        <div class="row">
           <label>Duty (0-255)</label>
-          <input name=dutyL type=number min=0 max=255 required>
+          <input name="dutyL" type="number" min="0" max="255" required>
         </div>
-        <div class=btnbar>
-          <button class=primary type=submit name="leftOn" value="1">Start Left</button>
-          <button type=submit name="leftOn" value="0">Stop Left</button>
-          <button type=submit>Apply (Left)</button>
+        <div class="btnbar">
+          <button class="primary" type="submit" name="leftOn" value="1">Start Left</button>
+          <button type="submit" name="leftOn" value="0">Stop Left</button>
+          <button type="submit">Apply (Left)</button>
         </div>
       </form>
-      <p class=status>State: <b id=ls></b> • F=<span id=fl></span> Hz • Duty=<span id=dl></span></p>
+      <p class="status">State: <b id="ls"></b> &bull; F=<span id="fl"></span> Hz &bull; Duty=<span id="dl"></span></p>
     </div>
 
-    <div class=card>
+    <div class="card">
       <h4>Right Channel</h4>
       <form action="/set" method="get">
-        <div class=row>
+        <div class="row">
           <label>Frequency (Hz)</label>
-          <input name=freqR type=number min=1 max=40000 required>
+          <input name="freqR" type="number" min="1" max="40000" required>
         </div>
-        <div class=row>
+        <div class="row">
           <label>Duty (0-255)</label>
-          <input name=dutyR type=number min=0 max=255 required>
+          <input name="dutyR" type="number" min="0" max="255" required>
         </div>
-        <div class=btnbar>
-          <button class=primary type=submit name="rightOn" value="1">Start Right</button>
-          <button type=submit name="rightOn" value="0">Stop Right</button>
-          <button type=submit>Apply (Right)</button>
+        <div class="btnbar">
+          <button class="primary" type="submit" name="rightOn" value="1">Start Right</button>
+          <button type="submit" name="rightOn" value="0">Stop Right</button>
+          <button type="submit">Apply (Right)</button>
         </div>
       </form>
-      <p class=status>State: <b id=rs></b> • F=<span id=fr></span> Hz • Duty=<span id=dr></span></p>
+      <p class="status">State: <b id="rs"></b> &bull; F=<span id="fr"></span> Hz &bull; Duty=<span id="dr"></span></p>
     </div>
   </div>
 
-  <div class=card style="margin-top:16px">
+  <div class="card" style="margin-top:16px">
     <h4>API</h4>
-    <p class=mono>GET <code>/status</code></p>
-    <p class=mono>GET <code>/startL</code> • <code>/stopL</code> • <code>/startR</code> • <code>/stopR</code></p>
-    <p class=mono>GET <code>/set?freqL=440&dutyL=127&leftOn=1</code></p>
-    <p class=mono>GET <code>/set?freqR=523&dutyR=64&rightOn=0</code></p>
-    <p class=status>Resolution: 12-bit (0–4095 internal). Lower frequencies enabled.</p>
+    <p class="mono">GET <code>/status</code></p>
+    <p class="mono">GET <code>/startL</code> &bull; <code>/stopL</code> &bull; <code>/startR</code> &bull; <code>/stopR</code></p>
+    <p class="mono">GET <code>/set?freqL=440&dutyL=127&leftOn=1</code></p>
+    <p class="mono">GET <code>/set?freqR=523&dutyR=64&rightOn=0</code></p>
+    <p class="status">Resolution: 12-bit (0&ndash;4095 internal). Lower frequencies enabled.</p>
   </div>
 
   <script>
@@ -180,8 +186,9 @@ String page() {
     rs.textContent = curr.rightOn ? "Running" : "Stopped";
   </script>
 
-  </body></html>
-  )HTML";
+</body>
+</html>
+)HTML";
   return html;
 }
 
@@ -243,33 +250,11 @@ void handleSet(AsyncWebServerRequest *req){
   req->redirect("/");
 }
 
-void handleStatus(AsyncWebServerRequest *req){
-  sendJSON(req, jsonStatus());
-}
-
-void handleStartL(AsyncWebServerRequest *req){
-  leftEnabled = true;
-  writeOutputs();
-  sendJSON(req, jsonStatus());
-}
-
-void handleStopL(AsyncWebServerRequest *req){
-  leftEnabled = false;
-  writeOutputs();
-  sendJSON(req, jsonStatus());
-}
-
-void handleStartR(AsyncWebServerRequest *req){
-  rightEnabled = true;
-  writeOutputs();
-  sendJSON(req, jsonStatus());
-}
-
-void handleStopR(AsyncWebServerRequest *req){
-  rightEnabled = false;
-  writeOutputs();
-  sendJSON(req, jsonStatus());
-}
+void handleStatus(AsyncWebServerRequest *req){ sendJSON(req, jsonStatus()); }
+void handleStartL(AsyncWebServerRequest *req){ leftEnabled = true;  writeOutputs(); sendJSON(req, jsonStatus()); }
+void handleStopL (AsyncWebServerRequest *req){ leftEnabled = false; writeOutputs(); sendJSON(req, jsonStatus()); }
+void handleStartR(AsyncWebServerRequest *req){ rightEnabled = true; writeOutputs(); sendJSON(req, jsonStatus()); }
+void handleStopR (AsyncWebServerRequest *req){ rightEnabled = false;writeOutputs(); sendJSON(req, jsonStatus()); }
 
 void setup() {
   Serial.begin(115200);
@@ -278,14 +263,13 @@ void setup() {
   connectWifiSTA();
   applyPwmInit();
 
-  // Pages & API
-  server.on("/",      HTTP_GET, [](AsyncWebServerRequest *req){ req->send(200, "text/html", page()); });
-  server.on("/set",   HTTP_GET, [](AsyncWebServerRequest *req){ handleSet(req); });
-  server.on("/status",HTTP_GET, [](AsyncWebServerRequest *req){ handleStatus(req); });
-  server.on("/startL",HTTP_GET, [](AsyncWebServerRequest *req){ handleStartL(req); });
-  server.on("/stopL", HTTP_GET, [](AsyncWebServerRequest *req){ handleStopL(req); });
-  server.on("/startR",HTTP_GET, [](AsyncWebServerRequest *req){ handleStartR(req); });
-  server.on("/stopR", HTTP_GET, [](AsyncWebServerRequest *req){ handleStopR(req); });
+  server.on("/",       HTTP_GET, [](AsyncWebServerRequest *req){ req->send(200, "text/html", page()); });
+  server.on("/set",    HTTP_GET, [](AsyncWebServerRequest *req){ handleSet(req); });
+  server.on("/status", HTTP_GET, [](AsyncWebServerRequest *req){ handleStatus(req); });
+  server.on("/startL", HTTP_GET, [](AsyncWebServerRequest *req){ handleStartL(req); });
+  server.on("/stopL",  HTTP_GET, [](AsyncWebServerRequest *req){ handleStopL(req); });
+  server.on("/startR", HTTP_GET, [](AsyncWebServerRequest *req){ handleStartR(req); });
+  server.on("/stopR",  HTTP_GET, [](AsyncWebServerRequest *req){ handleStopR(req); });
 
   server.begin();
   Serial.println("HTTP server started.");
